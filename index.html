@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulación de Envío de Correo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-container {
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2>Enviar Correo</h2>
+        <form id="emailForm">
+            <label for="destino">Destino:</label>
+            <input type="email" id="destino" name="destino" required>
+
+            <label for="asunto">Asunto:</label>
+            <input type="text" id="asunto" name="asunto" required>
+
+            <label for="cc">CC (opcional):</label>
+            <input type="email" id="cc" name="cc">
+
+            <label for="mensaje">Mensaje:</label>
+            <textarea id="mensaje" name="mensaje" rows="5" required></textarea>
+
+            <button type="submit">Enviar</button>
+        </form>
+        <div id="responseMessage" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        document.getElementById('emailForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Evita que el formulario se recargue
+
+            const destino = document.getElementById('destino').value;
+            const asunto = document.getElementById('asunto').value;
+            const cc = document.getElementById('cc').value;
+            const mensaje = document.getElementById('mensaje').value;
+
+            // Crear el objeto de datos a enviar
+            const data = {
+                destino,
+                asunto,
+                cc,
+                mensaje
+            };
+
+            // Enviar la solicitud al backend usando fetch
+            fetch('http://localhost:8080/enviar/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('responseMessage').textContent = data.message;
+                document.getElementById('responseMessage').style.color = 'green';
+            })
+            .catch(error => {
+                console.error('Error al enviar el correo:', error);
+                document.getElementById('responseMessage').textContent = 'Hubo un error al enviar el correo.';
+                document.getElementById('responseMessage').style.color = 'red';
+            });
+        });
+    </script>
+
+</body>
+</html>
